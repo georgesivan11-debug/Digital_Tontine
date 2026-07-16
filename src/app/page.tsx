@@ -3,16 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, ShieldCheck, Clock, Users } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 export default function Home() {
   // Animation variants
-  const fadeUp = {
+  const fadeUp: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
   };
 
-  const staggerContainer = {
+  const staggerContainer: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -20,7 +20,7 @@ export default function Home() {
     }
   };
 
-  const imageScale = {
+  const imageScale: Variants = {
     hidden: { opacity: 0, scale: 0.9 },
     visible: { opacity: 1, scale: 1, transition: { duration: 1, ease: "easeOut", delay: 0.4 } }
   };

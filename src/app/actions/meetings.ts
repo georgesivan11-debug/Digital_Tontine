@@ -15,7 +15,7 @@ export async function createMeeting(formData: FormData) {
   const secretaryId = formData.get("secretaryId") as string;
 
   if (!groupId || !dateStr) {
-    return { error: "Group ID and Date are required" };
+    throw new Error("Group ID and Date are required");
   }
 
   // Verify the user is an organizer
@@ -24,7 +24,7 @@ export async function createMeeting(formData: FormData) {
   });
 
   if (!group || group.organizerId !== session.user.id) {
-    return { error: "Only the organizer can schedule meetings." };
+    throw new Error("Only the organizer can schedule meetings.");
   }
 
   await prisma.meeting.create({
@@ -46,7 +46,7 @@ export async function createMeeting(formData: FormData) {
   }
 
   revalidatePath(`/dashboard/groups/${groupId}`);
-  return { success: true };
+  return;
 }
 
 export async function updateMeetingReport(formData: FormData) {
@@ -57,18 +57,18 @@ export async function updateMeetingReport(formData: FormData) {
   const report = formData.get("report") as string;
   const groupId = formData.get("groupId") as string;
 
-  if (!meetingId || !report) return { error: "Missing fields" };
+  if (!meetingId || !report) throw new Error("Missing fields");
 
   const meeting = await prisma.meeting.findUnique({
     where: { id: meetingId },
     include: { group: true }
   });
 
-  if (!meeting) return { error: "Meeting not found" };
+  if (!meeting) throw new Error("Meeting not found");
 
   // Only Secretary or Organizer can edit
   if (meeting.secretaryId !== session.user.id && meeting.group.organizerId !== session.user.id) {
-    return { error: "Not authorized to edit this report." };
+    throw new Error("Not authorized to edit this report.");
   }
 
   await prisma.meeting.update({
@@ -77,5 +77,5 @@ export async function updateMeetingReport(formData: FormData) {
   });
 
   revalidatePath(`/dashboard/groups/${groupId}`);
-  return { success: true };
+  return;
 }

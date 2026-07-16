@@ -12,9 +12,13 @@ export default function CreateGroupPage() {
   async function handleSubmit(formData: FormData) {
     setLoading(true);
     setError(null);
-    const res = await createTontineGroup(formData);
-    if (res?.error) {
-      setError(res.error);
+    try {
+      await createTontineGroup(formData);
+    } catch (err: any) {
+      if (err.message === "NEXT_REDIRECT") {
+        throw err;
+      }
+      setError(err.message || "An error occurred");
       setLoading(false);
     }
   }

@@ -4,16 +4,20 @@ import { Users, LayoutDashboard, CalendarDays, Receipt, Settings, LogOut, ArrowL
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NotificationBell } from "@/components/NotificationBell";
+import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  let unreadCount = 0;
+  const userId = session?.user?.id;
   
-  if (session?.user?.id) {
-    unreadCount = await prisma.notification.count({
-      where: { userId: session.user.id, read: false }
-    });
+  if (!userId) {
+    redirect("/login");
   }
+
+  const unreadCount = await prisma.notification.count({
+    where: { userId: userId, read: false }
+  });
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-blue-950/20 flex flex-col md:flex-row pb-20 md:pb-0">
       

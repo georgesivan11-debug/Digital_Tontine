@@ -7,7 +7,8 @@ import { createNotification } from "./notifications";
 
 export async function createTontineGroup(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) {
+  const userId = session?.user?.id;
+  if (!userId) {
     throw new Error("Unauthorized");
   }
 
@@ -18,7 +19,7 @@ export async function createTontineGroup(formData: FormData) {
   const startDateStr = formData.get("startDate") as string;
 
   if (!name || isNaN(contributionAmount) || !frequency || !currency || !startDateStr) {
-    return { error: "Missing required fields" };
+    throw new Error("Missing required fields");
   }
 
   const startDate = new Date(startDateStr);
@@ -30,10 +31,10 @@ export async function createTontineGroup(formData: FormData) {
       frequency,
       currency,
       startDate,
-      organizerId: session.user.id,
+      organizerId: userId,
       memberships: {
         create: {
-          userId: session.user.id,
+          userId: userId,
           role: "ORGANIZER",
           turnOrder: 1,
         }
@@ -46,21 +47,22 @@ export async function createTontineGroup(formData: FormData) {
 
 export async function joinGroup(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) {
+  const userId = session?.user?.id;
+  if (!userId) {
     throw new Error("Unauthorized");
   }
 
   const groupId = formData.get("groupId") as string;
-  if (!groupId) return { error: "Missing groupId" };
+  if (!groupId) throw new Error("Missing groupId");
 
   const group = await prisma.tontineGroup.findUnique({
     where: { id: groupId },
     include: { memberships: true }
   });
 
-  if (!group) return { error: "Group not found" };
+  if (!group) throw new Error("Group not found");
 
-  const existing = group.memberships.find(m => m.userId === session.user.id);
+  const existing = group.memberships.find(m => m.userId === userId);
   if (existing) {
     redirect(`/dashboard/groups/${groupId}`);
   }
@@ -69,7 +71,7 @@ export async function joinGroup(formData: FormData) {
 
   await prisma.membership.create({
     data: {
-      userId: session.user.id,
+      userId: userId,
       groupId,
       role: "MEMBER",
       turnOrder: newTurnOrder,
@@ -77,10 +79,11 @@ export async function joinGroup(formData: FormData) {
   });
 
   const userJoining = session.user;
+  const userNameOrEmail = userJoining?.name || userJoining?.email || "A new member";
   await createNotification(
     group.organizerId,
     "MEMBER_JOINED",
-    `${userJoining.name || userJoining.email} has joined your group "${group.name}".`
+    `${userNameOrEmail} has joined your group "${group.name}".`
   );
 
   redirect(`/dashboard/groups/${groupId}`);
@@ -88,45 +91,45 @@ export async function joinGroup(formData: FormData) {
 
 export async function generateRounds(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) throw new Error("Unauthorized");
+  const userId = session?.user?.id;
+  if (!userId) throw new Error("Unauthorized");
 
   const groupId = formData.get("groupId") as string;
-  if (!groupId) return { error: "Missing groupId" };
+  if (!groupId) throw new Error("Missing groupId");
 
   const group = await prisma.tontineGroup.findUnique({
     where: { id: groupId },
     include: { memberships: { orderBy: { turnOrder: 'asc' } }, rounds: true }
   });
 
-  if (!group) return { error: "Group not found" };
-  if (group.organizerId !== session.user.id) return { error: "Only the organizer can generate rounds" };
-  if (group.rounds.length > 0) return { error: "Rounds already generated" };
-  if (group.memberships.length < 2) return { error: "Need at least 2 members to start the Tontine" };
+  if (!group) throw new Error("Group not found");
+  if (group.organizerId !== userId) throw new Error("Only the organizer can generate rounds");
+  if (group.rounds.length > 0) throw new Error("Rounds already generated");
+  if (group.memberships.length < 2) throw new Error("Need at least 2 members to start the Tontine");
 
-  let currentStartDate = new Date(group.startDate);
+  let currentDueDate = new Date(group.startDate);
+  let roundNumber = 1;
   
   for (const membership of group.memberships) {
-    let currentEndDate = new Date(currentStartDate);
-    
     if (group.frequency === "WEEKLY") {
-      currentEndDate.setDate(currentEndDate.getDate() + 7);
+      currentDueDate.setDate(currentDueDate.getDate() + 7);
     } else if (group.frequency === "BIWEEKLY") {
-      currentEndDate.setDate(currentEndDate.getDate() + 14);
+      currentDueDate.setDate(currentDueDate.getDate() + 14);
     } else if (group.frequency === "MONTHLY") {
-      currentEndDate.setMonth(currentEndDate.getMonth() + 1);
+      currentDueDate.setMonth(currentDueDate.getMonth() + 1);
     }
 
     await prisma.round.create({
       data: {
         groupId: group.id,
-        beneficiaryId: membership.userId,
-        startDate: currentStartDate,
-        endDate: currentEndDate,
-        status: "PENDING",
+        roundNumber: roundNumber,
+        beneficiaryMembershipId: membership.id,
+        dueDate: currentDueDate,
+        status: "UPCOMING",
       }
     });
 
-    currentStartDate = new Date(currentEndDate);
+    roundNumber++;
   }
 
   redirect(`/dashboard/groups/${groupId}`);

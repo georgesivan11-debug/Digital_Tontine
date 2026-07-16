@@ -21,8 +21,8 @@ export default async function GroupDetailsPage({ params }: { params: { id: strin
         include: { user: true }
       },
       rounds: {
-        include: { beneficiary: true, payments: true },
-        orderBy: { startDate: 'asc' }
+        include: { beneficiaryMembership: { include: { user: true } }, payments: true },
+        orderBy: { dueDate: 'asc' }
       },
       meetings: {
         include: { createdBy: true, secretary: true },
@@ -94,8 +94,8 @@ export default async function GroupDetailsPage({ params }: { params: { id: strin
             ) : (
               <div className="space-y-4">
                 {group.rounds.map((round, index) => {
-                  const isActive = new Date() >= round.startDate && new Date() <= round.endDate;
-                  const isFuture = new Date() < round.startDate;
+                  const isActive = round.status === "ACTIVE" || round.status === "UPCOMING";
+                  const isFuture = round.status === "UPCOMING";
                   
                   // Check if current user has paid for this round
                   const myPayment = round.payments.find(p => p.membershipId === group.memberships.find(m => m.userId === currentUserId)?.id);
@@ -105,13 +105,13 @@ export default async function GroupDetailsPage({ params }: { params: { id: strin
                       <div className="flex justify-between items-center">
                         <div>
                           <span className="text-xs font-bold text-gray-400">ROUND {index + 1}</span>
-                          <h4 className="font-bold text-lg">{round.beneficiary.name} is receiving</h4>
+                          <h4 className="font-bold text-lg">{round.beneficiaryMembership?.user.name} is receiving</h4>
                           <p className="text-sm text-gray-500">
-                            {round.startDate.toLocaleDateString()} - {round.endDate.toLocaleDateString()}
+                            Due by {round.dueDate.toLocaleDateString()}
                           </p>
                         </div>
                         <div>
-                          {isActive && !myPayment && round.beneficiaryId !== currentUserId && (
+                          {isActive && !myPayment && round.beneficiaryMembership?.userId !== currentUserId && (
                             <form action={declarePayment}>
                               <input type="hidden" name="roundId" value={round.id} />
                               <input type="hidden" name="groupId" value={group.id} />

@@ -17,7 +17,7 @@ export async function declarePayment(formData: FormData) {
   const method = formData.get("method") as string;
 
   if (!roundId || !amount || !method || isNaN(amount)) {
-    return { error: "Invalid payment data" };
+    throw new Error("Invalid payment data");
   }
 
   const membership = await prisma.membership.findFirst({
@@ -28,7 +28,7 @@ export async function declarePayment(formData: FormData) {
   });
 
   if (!membership) {
-    return { error: "You are not a member of this group" };
+    throw new Error("You are not a member of this group");
   }
 
   await prisma.payment.create({
@@ -52,7 +52,7 @@ export async function declarePayment(formData: FormData) {
   }
 
   revalidatePath(`/dashboard/groups/${groupId}`);
-  return { success: true };
+  return;
 }
 
 export async function validatePayment(paymentId: string, groupId: string) {
@@ -84,5 +84,5 @@ export async function validatePayment(paymentId: string, groupId: string) {
   }
 
   revalidatePath(`/dashboard/groups/${groupId}`);
-  return { success: true };
+  return;
 }

@@ -2,16 +2,18 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { Plus, Bell, TrendingUp, AlertCircle, ArrowUpRight, CheckCircle2, Users } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import DashboardChart from "./DashboardChart";
 
 export default async function DashboardOverview() {
   const session = await auth();
+  const userId = session?.user?.id;
   
-  if (!session?.user?.id) return null;
+  if (!userId) redirect("/login");
 
   // Fetch groups where the user is an organizer or member
   const userMemberships = await prisma.membership.findMany({
-    where: { userId: session.user.id },
+    where: { userId: userId },
     include: {
       group: {
         include: {
@@ -37,7 +39,7 @@ export default async function DashboardOverview() {
   let olderPaymentsSum = 0;
 
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const chartData = [];
+  const chartData: any[] = [];
   const now = new Date();
   const oldestDate = new Date(now.getFullYear(), now.getMonth() - 5, 1);
   
@@ -56,7 +58,7 @@ export default async function DashboardOverview() {
     if (m.group.currency === currency) {
       m.group.rounds.forEach(round => {
         round.payments.forEach(p => {
-          if (p.status === "PENDING" && m.group.organizerId === session.user.id) {
+          if (p.status === "PENDING" && m.group.organizerId === userId) {
             pendingValidations++;
           }
           if (p.status === "CONFIRMED") {
@@ -97,7 +99,7 @@ export default async function DashboardOverview() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Welcome back, {session.user.name || 'Organizer'}!</h1>
+          <h1 className="text-2xl font-bold text-foreground">Welcome back, {session?.user?.name || 'Organizer'}!</h1>
           <p className="text-foreground/60 text-sm mt-1">Here is what's happening with your tontines today.</p>
         </div>
         <div className="flex items-center space-x-3">

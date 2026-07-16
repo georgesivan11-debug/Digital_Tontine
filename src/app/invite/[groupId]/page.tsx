@@ -7,8 +7,9 @@ import { joinGroup } from "@/app/actions/groups";
 
 export default async function InvitePage({ params }: { params: { groupId: string } }) {
   const session = await auth();
+  const userId = session?.user?.id;
   
-  if (!session?.user?.id) {
+  if (!userId) {
     // Redirect to login but save the callback url so they return here after registering/logging in
     redirect(`/login?callbackUrl=/invite/${params.groupId}`);
   }
@@ -33,7 +34,7 @@ export default async function InvitePage({ params }: { params: { groupId: string
     );
   }
 
-  const existingMembership = group.memberships.find(m => m.userId === session.user.id);
+  const existingMembership = group.memberships.find(m => m.userId === userId);
 
   if (existingMembership) {
     return (

@@ -1,15 +1,19 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { Calendar as CalendarIcon, Clock, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
 export default async function GlobalCalendarPage() {
   const session = await auth();
-  if (!session?.user?.id) return null;
+  const userId = session?.user?.id;
+  if (!userId) {
+    redirect("/login");
+  }
 
   // Find all groups the user belongs to
   const memberships = await prisma.membership.findMany({
-    where: { userId: session.user.id },
+    where: { userId: userId },
     include: {
       group: {
         include: {
