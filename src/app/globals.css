@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@variant dark (&:is(.dark *));
+
 @theme {
   --color-blue-950: #0a1128;
   --color-blue-900: #1a2a5e;
@@ -17,11 +19,9 @@
   --foreground: #0a1128;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a1128;
-    --foreground: #f8fafc;
-  }
+.dark {
+  --background: #0a1128;
+  --foreground: #f8fafc;
 }
 
 body {
