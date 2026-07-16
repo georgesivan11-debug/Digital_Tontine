@@ -12,7 +12,7 @@ export default async function SettingsPage() {
 
   const dbUser = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { emailReminders: true }
+    select: { name: true, emailReminders: true }
   });
 
   return (
@@ -44,7 +44,7 @@ export default async function SettingsPage() {
                 <input 
                   type="text" 
                   name="name" 
-                  defaultValue={session.user.name || ""} 
+                  defaultValue={dbUser?.name || session.user.name || ""} 
                   className="flex-1 px-4 py-2 bg-gray-50 dark:bg-blue-900/20 rounded-lg border border-gray-100 dark:border-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button type="submit" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center transition-colors">

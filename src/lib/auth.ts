@@ -57,8 +57,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token
     },
     async session({ session, token }) {
-      if (session.user) {
+      if (session.user && token.id) {
         session.user.id = token.id as string
+        
+        // Fetch fresh data from DB to avoid stale session cache
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { name: true }
+        });
+        if (dbUser?.name) {
+          session.user.name = dbUser.name;
+        }
       }
       return session
     },
