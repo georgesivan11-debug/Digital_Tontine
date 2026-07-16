@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NotificationBell } from "@/components/NotificationBell";
 import { DesktopNavigation, MobileBottomNav } from "@/components/DashboardNavigation";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -24,11 +25,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
       
       {/* Desktop Sidebar (Hidden on mobile) */}
       <aside className="hidden md:flex w-64 bg-white dark:bg-blue-950 border-r border-gray-200 dark:border-blue-900 flex-shrink-0 flex-col h-screen sticky top-0">
-        <div className="p-6 border-b border-gray-200 dark:border-blue-900">
+        <div className="p-6 border-b border-gray-200 dark:border-blue-900 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Image src="/logo.png" alt="Digital Tontine Logo" width={32} height={32} className="rounded-full shadow-sm" />
             <span className="font-bold text-xl tracking-tight text-foreground">Digital Tontine</span>
           </div>
+          <ThemeToggle />
         </div>
 
         <DesktopNavigation unreadCount={unreadCount} />
@@ -43,6 +45,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <span className="font-bold text-lg tracking-tight text-foreground">Digital Tontine</span>
           </div>
           <div className="flex items-center space-x-3">
+            <ThemeToggle />
             <NotificationBell initialCount={unreadCount} />
             <Link href="/" className="text-coral-500 p-2"><LogOut className="w-5 h-5" /></Link>
           </div>

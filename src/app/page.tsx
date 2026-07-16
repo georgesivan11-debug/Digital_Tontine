@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, ShieldCheck, Clock, Users } from "lucide-react";
 import { motion, Variants } from "framer-motion";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Home() {
   // Animation variants
@@ -40,7 +41,8 @@ export default function Home() {
             <Link href="#benefits" className="hover:text-gold-500 transition-colors">Benefits</Link>
             <Link href="#pricing" className="hover:text-gold-500 transition-colors">Pricing</Link>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            <ThemeToggle />
             <Link href="/login" className="text-sm font-medium hover:text-gold-500 transition-colors hidden sm:block">
               Log in
             </Link>
