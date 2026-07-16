@@ -41,9 +41,9 @@ export default async function DashboardOverview() {
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const chartData: any[] = [];
   const now = new Date();
-  const oldestDate = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+  const oldestDate = new Date(now.getFullYear(), now.getMonth() - 11, 1);
   
-  for (let i = 5; i >= 0; i--) {
+  for (let i = 11; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     chartData.push({
       name: monthNames[d.getMonth()],

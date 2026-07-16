@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { Settings, User, Bell, Shield, Wallet } from "lucide-react";
+import { Settings, User, Bell, Shield, Wallet, Save } from "lucide-react";
+import { updateProfileName } from "@/app/actions/settings";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -30,16 +31,29 @@ export default async function SettingsPage() {
               <p className="text-sm text-foreground/60">Update your personal information</p>
             </div>
           </div>
-          <div className="space-y-4">
+          <form action={updateProfileName} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-500 mb-1">Full Name</label>
-              <div className="px-4 py-2 bg-gray-50 dark:bg-blue-900/20 rounded-lg border border-gray-100 dark:border-blue-900">{session.user.name || "N/A"}</div>
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  name="name" 
+                  defaultValue={session.user.name || ""} 
+                  className="flex-1 px-4 py-2 bg-gray-50 dark:bg-blue-900/20 rounded-lg border border-gray-100 dark:border-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button type="submit" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center transition-colors">
+                  <Save className="w-4 h-4" />
+                </button>
+              </div>
+              <p className="text-xs text-gray-400 mt-1">Click the save icon to update your name.</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
-              <div className="px-4 py-2 bg-gray-50 dark:bg-blue-900/20 rounded-lg border border-gray-100 dark:border-blue-900">{session.user.email}</div>
+              <div className="px-4 py-2 bg-gray-100 text-gray-400 dark:bg-blue-950/50 rounded-lg border border-gray-100 dark:border-blue-900 cursor-not-allowed">
+                {session.user.email} (Cannot be changed)
+              </div>
             </div>
-          </div>
+          </form>
         </div>
 
         {/* Notifications Card */}
