@@ -76,10 +76,13 @@ export default function Home() {
               Say goodbye to calculation errors and notebook tracking. Manage your rotating savings groups with complete trust, automatic reminders, and reliable history.
             </motion.p>
             
-            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-center items-center mb-16 space-y-4 sm:space-y-0">
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-center items-center mb-16 space-y-4 sm:space-y-0 sm:space-x-4">
               <Link href="/register" className="w-full sm:w-auto px-8 sm:px-10 py-4 rounded-full bg-blue-950 dark:bg-white text-white dark:text-blue-950 text-base sm:text-lg font-bold hover:bg-blue-900 dark:hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl flex items-center justify-center group">
                 Start your Tontine now
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link href="/login" className="w-full sm:w-auto px-8 sm:px-10 py-4 rounded-full border-2 border-blue-950 dark:border-white text-blue-950 dark:text-white text-base sm:text-lg font-bold hover:bg-blue-50 dark:hover:bg-white/10 transition-all flex items-center justify-center">
+                Already registered? Log in
               </Link>
             </motion.div>
 
