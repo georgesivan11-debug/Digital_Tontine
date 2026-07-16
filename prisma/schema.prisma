@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String?        @unique
+  phone         String?        @unique
+  passwordHash  String?
+  name          String?
+  emailVerified DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  memberships   Membership[]
+  organizedGroups TontineGroup[] @relation("GroupOrganizer")
+  activityLogs  ActivityLog[]
+  createdMeetings Meeting[] @relation("MeetingCreator")
+  secretaryMeetings Meeting[] @relation("MeetingSecretary")
+  notifications Notification[]
+}
+
+model TontineGroup {
+  id                  String        @id @default(cuid())
+  name                String
+  organizerId         String
+  contributionAmount  Float
+  frequency           String        // e.g., "WEEKLY", "MONTHLY"
+  currency            String        // e.g., "XAF", "USD", "EUR"
+  startDate           DateTime
+  penaltyRule         String?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  organizer           User          @relation("GroupOrganizer", fields: [organizerId], references: [id])
+  memberships         Membership[]
+  rounds              Round[]
+  activityLogs        ActivityLog[]
+  meetings            Meeting[]
+}
+
+model Membership {
+  id          String        @id @default(cuid())
+  groupId     String
+  userId      String
+  role        String        @default("MEMBER") // "ORGANIZER", "TREASURER", "MEMBER"
+  turnOrder   Int?
+  joinedAt    DateTime      @default(now())
+
+  group       TontineGroup  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  payments           Payment[]
+  beneficiaryRounds  Round[]      @relation("RoundBeneficiary")
+  meetingAttendances MeetingAttendance[]
+
+  @@unique([groupId, userId])
+}
+
+model Round {
+  id                      String        @id @default(cuid())
+  groupId                 String
+  roundNumber             Int
+  beneficiaryMembershipId String?
+  dueDate                 DateTime
+  status                  String        @default("UPCOMING") // "UPCOMING", "ACTIVE", "COMPLETED"
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+
+  group                 TontineGroup  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  beneficiaryMembership Membership?   @relation("RoundBeneficiary", fields: [beneficiaryMembershipId], references: [id])
+  payments              Payment[]
+  meetings              Meeting[]
+}
+
+model Payment {
+  id              String    @id @default(cuid())
+  roundId         String
+  membershipId    String
+  amount          Float
+  date            DateTime  @default(now())
+  method          String    // "CASH", "MOBILE_MONEY", "BANK_TRANSFER"
+  status          String    @default("PENDING") // "PENDING", "CONFIRMED", "REJECTED"
+  validatedById   String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  round           Round      @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  membership      Membership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  groupId   String
+  actorId   String
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+
+  group     TontineGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  actor     User         @relation(fields: [actorId], references: [id], onDelete: Cascade)
+}
+
+model Meeting {
+  id             String   @id @default(cuid())
+  groupId        String
+  roundId        String?
+  date           DateTime
+  locationOrLink String?
+  agenda         String?
+  minutesText    String?
+  createdById    String
+  secretaryId    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  group          TontineGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  round          Round?       @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  createdBy      User         @relation("MeetingCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  secretary      User?        @relation("MeetingSecretary", fields: [secretaryId], references: [id])
+  
+  attendances    MeetingAttendance[]
+  attachments    MeetingAttachment[]
+}
+
+model MeetingAttendance {
+  id             String   @id @default(cuid())
+  meetingId      String
+  membershipId   String
+  status         String   @default("PRESENT") // "PRESENT", "ABSENT", "EXCUSED"
+
+  meeting        Meeting    @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  membership     Membership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  @@unique([meetingId, membershipId])
+}
+
+model MeetingAttachment {
+  id          String   @id @default(cuid())
+  meetingId   String
+  fileUrl     String
+  uploadedAt  DateTime @default(now())
+
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
