@@ -13,7 +13,7 @@ export default function DashboardChart({ data }: { data: any[] }) {
               <stop offset="95%" stopColor="#facc15" stopOpacity={0}/>
             </linearGradient>
           </defs>
-          <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} dy={10} />
+          <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#888' }} dy={10} interval={0} />
           <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} />
           <Tooltip 
             contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}

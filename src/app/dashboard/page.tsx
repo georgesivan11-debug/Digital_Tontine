@@ -11,6 +11,11 @@ export default async function DashboardOverview() {
   
   if (!userId) redirect("/login");
 
+  const dbUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { name: true }
+  });
+
   // Fetch groups where the user is an organizer or member
   const userMemberships = await prisma.membership.findMany({
     where: { userId: userId },
@@ -98,7 +103,7 @@ export default async function DashboardOverview() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Welcome back, {session?.user?.name || 'Organizer'}!</h1>
+          <h1 className="text-2xl font-bold text-foreground">Welcome back, {dbUser?.name || session?.user?.name || 'Organizer'}!</h1>
           <p className="text-foreground/60 text-sm mt-1">Here is what's happening with your tontines today.</p>
         </div>
         <div className="flex items-center space-x-3">
