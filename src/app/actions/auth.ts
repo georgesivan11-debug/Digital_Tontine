@@ -19,56 +19,62 @@ export async function registerUser(formData: FormData) {
     return { error: "All fields are required" };
   }
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email },
-  });
-
-  if (existingUser) {
-    return { error: "Email is already in use" };
-  }
-
-  const passwordHash = await bcrypt.hash(password, 10);
-
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email,
-      passwordHash,
-    },
-  });
-
-  const token = uuidv4();
-  const expires = new Date(new Date().getTime() + 1000 * 60 * 60 * 24); // 24h
-
-  await prisma.verificationToken.create({
-    data: {
-      identifier: email,
-      token,
-      expires,
-    }
-  });
-
-  const confirmLink = `http://localhost:3000/api/verify-email?token=${token}`;
-
   try {
-    await resend.emails.send({
-      from: "Digital Tontine <onboarding@resend.dev>",
-      to: email,
-      subject: "Verify your Digital Tontine Account",
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; background-color: #f9fafb; border-radius: 10px;">
-          <h1 style="color: #172554;">Welcome to Digital Tontine! 💰</h1>
-          <p style="color: #4b5563; font-size: 16px;">We're excited to have you on board. Please verify your email address to activate your account and secure your tontine groups.</p>
-          <a href="${confirmLink}" style="display: inline-block; padding: 14px 28px; background-color: #fbbf24; color: #172554; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-            Verify My Account
-          </a>
-          <p style="color: #9ca3af; font-size: 12px; margin-top: 30px;">If you did not request this email, please ignore it.</p>
-        </div>
-      `
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
     });
-  } catch (err) {
-    console.error("Resend Email Error:", err);
-    // Even if email fails, we might still redirect, but it's bad UX. We'll proceed.
+
+    if (existingUser) {
+      return { error: "Email is already in use" };
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        passwordHash,
+      },
+    });
+
+    const token = uuidv4();
+    const expires = new Date(new Date().getTime() + 1000 * 60 * 60 * 24); // 24h
+
+    await prisma.verificationToken.create({
+      data: {
+        identifier: email,
+        token,
+        expires,
+      }
+    });
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+    const confirmLink = `${appUrl}/api/verify-email?token=${token}`;
+
+    if (process.env.RESEND_API_KEY) {
+      await resend.emails.send({
+        from: "Digital Tontine <onboarding@resend.dev>",
+        to: email,
+        subject: "Verify your Digital Tontine Account",
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; background-color: #f9fafb; border-radius: 10px;">
+            <h1 style="color: #172554;">Welcome to Digital Tontine! 💰</h1>
+            <p style="color: #4b5563; font-size: 16px;">We're excited to have you on board. Please verify your email address to activate your account and secure your tontine groups.</p>
+            <a href="${confirmLink}" style="display: inline-block; padding: 14px 28px; background-color: #fbbf24; color: #172554; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+              Verify My Account
+            </a>
+            <p style="color: #9ca3af; font-size: 12px; margin-top: 30px;">If you did not request this email, please ignore it.</p>
+          </div>
+        `
+      });
+    }
+  } catch (err: any) {
+    if (err.message === "NEXT_REDIRECT") {
+      throw err;
+    }
+    console.error("Registration Error:", err);
+    return { error: "A server error occurred. Please make sure DATABASE_URL and RESEND_API_KEY are configured in Vercel." };
   }
 
   redirect("/login?registered=true");
