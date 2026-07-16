@@ -134,3 +134,29 @@ export async function generateRounds(formData: FormData) {
 
   redirect(`/dashboard/groups/${groupId}`);
 }
+
+export async function changeMemberRole(groupId: string, membershipId: string, formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const newRole = formData.get("role") as string;
+  if (!["MEMBER", "TREASURER", "SECRETARY"].includes(newRole)) {
+    throw new Error("Invalid role");
+  }
+
+  const group = await prisma.tontineGroup.findUnique({
+    where: { id: groupId }
+  });
+
+  if (!group || group.organizerId !== session.user.id) {
+    throw new Error("Only the organizer can change roles");
+  }
+
+  await prisma.membership.update({
+    where: { id: membershipId },
+    data: { role: newRole }
+  });
+
+  // Revalidate the page
+  import("next/cache").then(m => m.revalidatePath(`/dashboard/groups/${groupId}`));
+}

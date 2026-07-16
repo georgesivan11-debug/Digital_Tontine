@@ -39,7 +39,7 @@ export async function GET(request: Request) {
     for (const round of upcomingRounds) {
       const daysLeft = new Date(round.dueDate).getDate() === oneDayFromNow.getDate() ? 1 : 7;
       for (const membership of round.group.memberships) {
-        if (membership.user.email) {
+        if (membership.user.email && membership.user.emailReminders) {
           // Send Notification
           await createNotification(
             membership.userId,
@@ -76,7 +76,7 @@ export async function GET(request: Request) {
     for (const meeting of upcomingMeetings) {
       const daysLeft = new Date(meeting.date).getDate() === oneDayFromNow.getDate() ? 1 : 7;
       for (const membership of meeting.group.memberships) {
-        if (membership.user.email) {
+        if (membership.user.email && membership.user.emailReminders) {
           // Send Notification
           await createNotification(
             membership.userId,

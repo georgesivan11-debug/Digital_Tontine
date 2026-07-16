@@ -5,7 +5,7 @@ import { ArrowLeft, Calendar, Users, DollarSign, PlusCircle, CheckCircle2 } from
 import Link from "next/link";
 import InviteButton from "./InviteButton";
 import MeetingsSection from "./MeetingsSection";
-import { generateRounds } from "@/app/actions/groups";
+import { generateRounds, changeMemberRole } from "@/app/actions/groups";
 import { declarePayment, validatePayment } from "@/app/actions/payments";
 
 export default async function GroupDetailsPage({ params }: { params: { id: string } }) {
@@ -181,7 +181,20 @@ export default async function GroupDetailsPage({ params }: { params: { id: strin
                     </div>
                     <div>
                       <p className="font-medium text-sm">{membership.user.name}</p>
-                      <p className="text-xs text-gray-500">{membership.role}</p>
+                      {isOrganizer && membership.userId !== currentUserId ? (
+                        <form action={changeMemberRole.bind(null, group.id, membership.id)} className="flex items-center space-x-2 mt-1">
+                          <select name="role" defaultValue={membership.role} className="text-xs border border-gray-200 dark:border-blue-800 rounded p-1 bg-gray-50 dark:bg-blue-900/50">
+                            <option value="MEMBER">Member</option>
+                            <option value="TREASURER">Treasurer</option>
+                            <option value="SECRETARY">Secretary</option>
+                          </select>
+                          <button type="submit" className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/80 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 transition-colors">
+                            Save
+                          </button>
+                        </form>
+                      ) : (
+                        <p className="text-xs text-gray-500">{membership.role}</p>
+                      )}
                     </div>
                   </div>
                   {membership.turnOrder && (
