@@ -39,15 +39,14 @@ export default function Home() {
           <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-foreground/80">
             <Link href="#how-it-works" className="hover:text-gold-500 transition-colors">How it works</Link>
             <Link href="#benefits" className="hover:text-gold-500 transition-colors">Benefits</Link>
-            <Link href="#pricing" className="hover:text-gold-500 transition-colors">Pricing</Link>
           </div>
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-3 sm:space-x-4">
             <ThemeToggle />
-            <Link href="/login" className="text-sm font-medium hover:text-gold-500 transition-colors hidden sm:block">
+            <Link href="/login" className="text-sm font-medium hover:text-gold-500 transition-colors">
               Log in
             </Link>
-            <Link href="/register" className="px-5 py-2.5 rounded-full bg-blue-950 dark:bg-white text-white dark:text-blue-950 text-sm font-semibold hover:bg-blue-900 dark:hover:bg-gray-100 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-              Create a group
+            <Link href="/register" className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-blue-950 dark:bg-white text-white dark:text-blue-950 text-sm font-semibold hover:bg-blue-900 dark:hover:bg-gray-100 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+              Start
             </Link>
           </div>
         </div>
@@ -224,61 +223,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing (Scroll Animated) */}
-      <section id="pricing" className="py-24 bg-white dark:bg-background">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={fadeUp}
-          >
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">Simple, transparent pricing</h2>
-            <p className="text-foreground/60 max-w-2xl mx-auto mb-16 text-lg">Start organizing your tontines for free. Upgrade when you need more power.</p>
-          </motion.div>
-          
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-            className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto"
-          >
-            {/* Free Tier */}
-            <motion.div variants={fadeUp} className="border border-gray-200 dark:border-gray-800 rounded-3xl p-8 text-left hover:shadow-2xl transition-all duration-300 bg-background">
-              <h3 className="text-2xl font-bold mb-2">Basic</h3>
-              <div className="text-5xl font-extrabold mb-6">Free<span className="text-lg text-gray-500 font-normal">/forever</span></div>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-center"><CheckCircle2 className="w-6 h-6 text-emerald-500 mr-3" /> <span className="font-medium">1 active tontine group</span></li>
-                <li className="flex items-center"><CheckCircle2 className="w-6 h-6 text-emerald-500 mr-3" /> <span className="font-medium">Up to 12 members</span></li>
-                <li className="flex items-center"><CheckCircle2 className="w-6 h-6 text-emerald-500 mr-3" /> <span className="font-medium">Basic dashboard</span></li>
-                <li className="flex items-center"><CheckCircle2 className="w-6 h-6 text-emerald-500 mr-3" /> <span className="font-medium">Email reminders</span></li>
-              </ul>
-              <Link href="/register" className="block text-center w-full py-4 rounded-full border-2 border-blue-950 dark:border-white font-bold hover:bg-blue-50 dark:hover:bg-white/5 transition-colors text-lg">
-                Get Started
-              </Link>
-            </motion.div>
-            
-            {/* Pro Tier */}
-            <motion.div variants={fadeUp} className="border-2 border-gold-400 rounded-3xl p-8 text-left shadow-2xl relative bg-background transform md:-translate-y-4">
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gold-400 text-blue-950 px-6 py-1.5 rounded-full text-sm font-bold shadow-md">
-                Recommended
-              </div>
-              <h3 className="text-2xl font-bold mb-2">Pro Organizer</h3>
-              <div className="text-5xl font-extrabold mb-6">$9<span className="text-lg text-gray-500 font-normal">/month</span></div>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-center"><CheckCircle2 className="w-6 h-6 text-emerald-500 mr-3" /> <span className="font-medium">Unlimited active groups</span></li>
-                <li className="flex items-center"><CheckCircle2 className="w-6 h-6 text-emerald-500 mr-3" /> <span className="font-medium">Unlimited members</span></li>
-                <li className="flex items-center"><CheckCircle2 className="w-6 h-6 text-emerald-500 mr-3" /> <span className="font-medium">Delegated secretary roles</span></li>
-                <li className="flex items-center"><CheckCircle2 className="w-6 h-6 text-emerald-500 mr-3" /> <span className="font-medium">Automated Cron Reminders</span></li>
-              </ul>
-              <Link href="/register?plan=pro" className="block text-center w-full py-4 rounded-full bg-gradient-to-r from-blue-900 to-blue-950 dark:from-gray-100 dark:to-white text-white dark:text-blue-950 font-bold hover:shadow-lg transition-all text-lg hover:scale-[1.02]">
-                Upgrade to Pro
-              </Link>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
+
 
       {/* Footer */}
       <footer className="bg-blue-950 text-blue-100 py-12 border-t border-blue-900">
@@ -296,7 +241,6 @@ export default function Home() {
             <h4 className="font-bold text-white mb-4">Product</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="#how-it-works" className="hover:text-gold-400">How it works</Link></li>
-              <li><Link href="#pricing" className="hover:text-gold-400">Pricing</Link></li>
               <li><Link href="/login" className="hover:text-gold-400">Log in</Link></li>
             </ul>
           </div>
