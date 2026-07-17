@@ -43,10 +43,10 @@ export default function Home() {
           <div className="flex items-center space-x-3 sm:space-x-4">
             <ThemeToggle />
             <Link href="/login" className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-full border-2 border-blue-600 dark:border-white text-blue-600 dark:text-white text-sm font-semibold hover:bg-blue-50 dark:hover:bg-white/10 transition-all">
-              Connexion
+              Log in
             </Link>
             <Link href="/register" className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-blue-600 dark:bg-gold-500 text-white dark:text-blue-950 text-sm font-semibold hover:bg-blue-700 dark:hover:bg-gold-400 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-              S'inscrire
+              Start
             </Link>
           </div>
         </div>
@@ -79,11 +79,11 @@ export default function Home() {
             
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-center items-center mb-16 space-y-4 sm:space-y-0 sm:space-x-4">
               <Link href="/register" className="w-full sm:w-auto px-8 sm:px-10 py-4 rounded-full bg-blue-600 dark:bg-gold-500 text-white dark:text-blue-950 text-base sm:text-lg font-bold hover:bg-blue-700 dark:hover:bg-gold-400 transition-all shadow-xl hover:shadow-2xl flex items-center justify-center group">
-                Commencer maintenant
+                Start your Tontine now
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link href="/login" className="w-full sm:w-auto px-8 sm:px-10 py-4 rounded-full border-2 border-blue-600 dark:border-white text-blue-600 dark:text-white text-base sm:text-lg font-bold hover:bg-blue-50 dark:hover:bg-white/10 transition-all flex items-center justify-center">
-                Déjà inscrit ? Connexion
+                Already registered? Log in
               </Link>
             </motion.div>
 
