@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users, LayoutDashboard, CalendarDays, Settings, Bell, LogOut } from "lucide-react";
+import { Users, LayoutDashboard, CalendarDays, Settings, Bell, LogOut, Home as HomeIcon } from "lucide-react";
 
 export function DesktopNavigation({ unreadCount }: { unreadCount: number }) {
   const pathname = usePathname();
@@ -47,6 +47,10 @@ export function DesktopNavigation({ unreadCount }: { unreadCount: number }) {
           {pathname.startsWith('/dashboard/settings') && <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-600 dark:bg-gold-400 rounded-r-md" />}
           <Settings className={`w-5 h-5 mr-3 transition-transform ${pathname.startsWith('/dashboard/settings') ? 'text-blue-700 dark:text-gold-400 scale-110' : 'text-gray-400'}`} />
           Settings
+        </Link>
+        <Link href="/" className="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 transition-colors border border-transparent">
+          <HomeIcon className="w-5 h-5 mr-3" />
+          Page d'accueil
         </Link>
         <Link href="/" className="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-coral-600 hover:bg-coral-50 dark:hover:bg-coral-900/20 transition-colors border border-transparent">
           <LogOut className="w-5 h-5 mr-3" />
