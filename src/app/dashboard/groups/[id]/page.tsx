@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { ArrowLeft, Calendar, Users, DollarSign, PlusCircle, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import InviteButton from "./InviteButton";
+import DeleteGroupButton from "./DeleteGroupButton";
 import MeetingsSection from "./MeetingsSection";
 import { generateRounds, changeMemberRole } from "@/app/actions/groups";
 import { declarePayment, validatePayment } from "@/app/actions/payments";
@@ -58,7 +59,10 @@ export default async function GroupDetailsPage(props: { params: Promise<{ id: st
         </div>
         <div className="flex items-center space-x-3">
           {isOrganizer && (
-            <InviteButton groupId={group.id} />
+            <>
+              <DeleteGroupButton groupId={group.id} />
+              <InviteButton groupId={group.id} />
+            </>
           )}
         </div>
       </div>

@@ -160,3 +160,22 @@ export async function changeMemberRole(groupId: string, membershipId: string, fo
   // Revalidate the page
   import("next/cache").then(m => m.revalidatePath(`/dashboard/groups/${groupId}`));
 }
+
+export async function deleteTontineGroup(groupId: string) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const group = await prisma.tontineGroup.findUnique({
+    where: { id: groupId }
+  });
+
+  if (!group || group.organizerId !== session.user.id) {
+    throw new Error("Only the organizer can delete the group");
+  }
+
+  await prisma.tontineGroup.delete({
+    where: { id: groupId }
+  });
+
+  redirect("/dashboard/groups");
+}
