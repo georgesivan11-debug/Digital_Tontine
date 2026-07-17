@@ -8,7 +8,8 @@ import MeetingsSection from "./MeetingsSection";
 import { generateRounds, changeMemberRole } from "@/app/actions/groups";
 import { declarePayment, validatePayment } from "@/app/actions/payments";
 
-export default async function GroupDetailsPage({ params }: { params: { id: string } }) {
+export default async function GroupDetailsPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const session = await auth();
   if (!session?.user?.id) {
     redirect("/login");

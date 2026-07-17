@@ -15,7 +15,7 @@ export default function CreateGroupPage() {
     try {
       await createTontineGroup(formData);
     } catch (err: any) {
-      if (err.message === "NEXT_REDIRECT") {
+      if (err.message === "NEXT_REDIRECT" || err.digest?.startsWith("NEXT_REDIRECT")) {
         throw err;
       }
       setError(err.message || "An error occurred");

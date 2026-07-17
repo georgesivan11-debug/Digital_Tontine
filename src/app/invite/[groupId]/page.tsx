@@ -5,7 +5,8 @@ import { Users, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { joinGroup } from "@/app/actions/groups";
 
-export default async function InvitePage({ params }: { params: { groupId: string } }) {
+export default async function InvitePage(props: { params: Promise<{ groupId: string }> }) {
+  const params = await props.params;
   const session = await auth();
   const userId = session?.user?.id;
   
