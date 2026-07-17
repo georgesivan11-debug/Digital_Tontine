@@ -20,34 +20,33 @@ export function DesktopNavigation({ unreadCount }: { unreadCount: number }) {
           const Icon = link.icon;
           const isActive = link.exact ? pathname === link.href : pathname.startsWith(link.href);
           return (
-            <Link key={link.href} href={link.href} className={`flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${isActive ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400 shadow-sm border border-blue-100 dark:border-blue-800' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-blue-900/20 dark:hover:text-white border border-transparent'}`}>
-              <Icon className={`w-5 h-5 mr-3 ${isActive ? 'text-blue-700 dark:text-blue-400' : 'text-gray-400'}`} />
+            <Link key={link.href} href={link.href} className={`relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all overflow-hidden ${isActive ? 'bg-blue-50/80 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 shadow-sm font-bold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-blue-900/20 dark:hover:text-white border border-transparent'}`}>
+              {isActive && <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-600 dark:bg-gold-400 rounded-r-md" />}
+              <Icon className={`w-5 h-5 mr-3 transition-transform ${isActive ? 'text-blue-700 dark:text-gold-400 scale-110' : 'text-gray-400 group-hover:scale-110'}`} />
               {link.label}
-              {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />}
             </Link>
           );
         })}
         
-        <Link href="/dashboard/notifications" className={`flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all ${pathname.startsWith('/dashboard/notifications') ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400 shadow-sm border border-blue-100 dark:border-blue-800' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-blue-900/20 dark:hover:text-white border border-transparent'}`}>
+        <Link href="/dashboard/notifications" className={`relative flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all overflow-hidden ${pathname.startsWith('/dashboard/notifications') ? 'bg-blue-50/80 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 shadow-sm font-bold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-blue-900/20 dark:hover:text-white border border-transparent'}`}>
+          {pathname.startsWith('/dashboard/notifications') && <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-600 dark:bg-gold-400 rounded-r-md" />}
           <div className="flex items-center">
-            <Bell className={`w-5 h-5 mr-3 ${pathname.startsWith('/dashboard/notifications') ? 'text-blue-700 dark:text-blue-400' : 'text-gray-400'}`} />
+            <Bell className={`w-5 h-5 mr-3 transition-transform ${pathname.startsWith('/dashboard/notifications') ? 'text-blue-700 dark:text-gold-400 scale-110' : 'text-gray-400'}`} />
             Notifications
           </div>
-          {unreadCount > 0 ? (
+          {unreadCount > 0 && (
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
-          ) : (
-            pathname.startsWith('/dashboard/notifications') && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
           )}
         </Link>
       </nav>
 
       <div className="p-4 border-t border-gray-200 dark:border-blue-900 space-y-2">
-        <Link href="/dashboard/settings" className={`flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all ${pathname.startsWith('/dashboard/settings') ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400 shadow-sm border border-blue-100 dark:border-blue-800' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-blue-900/20 dark:hover:text-white border border-transparent'}`}>
-          <Settings className={`w-5 h-5 mr-3 ${pathname.startsWith('/dashboard/settings') ? 'text-blue-700 dark:text-blue-400' : 'text-gray-400'}`} />
+        <Link href="/dashboard/settings" className={`relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all overflow-hidden ${pathname.startsWith('/dashboard/settings') ? 'bg-blue-50/80 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 shadow-sm font-bold' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-blue-900/20 dark:hover:text-white border border-transparent'}`}>
+          {pathname.startsWith('/dashboard/settings') && <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-600 dark:bg-gold-400 rounded-r-md" />}
+          <Settings className={`w-5 h-5 mr-3 transition-transform ${pathname.startsWith('/dashboard/settings') ? 'text-blue-700 dark:text-gold-400 scale-110' : 'text-gray-400'}`} />
           Settings
-          {pathname.startsWith('/dashboard/settings') && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />}
         </Link>
         <Link href="/" className="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-coral-600 hover:bg-coral-50 dark:hover:bg-coral-900/20 transition-colors border border-transparent">
           <LogOut className="w-5 h-5 mr-3" />
@@ -74,10 +73,10 @@ export function MobileBottomNav() {
         const Icon = link.icon;
         const isActive = link.exact ? pathname === link.href : pathname.startsWith(link.href);
         return (
-          <Link key={link.href} href={link.href} className={`relative flex flex-col items-center justify-center w-16 h-12 transition-colors ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'}`}>
+          <Link key={link.href} href={link.href} className={`relative flex flex-col items-center justify-center w-16 h-12 transition-colors ${isActive ? 'text-blue-600 dark:text-gold-400' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'}`}>
             <Icon className={`w-6 h-6 mb-1 ${isActive ? 'scale-110' : 'scale-100'} transition-transform`} />
-            <span className="text-[10px] font-medium">{link.label}</span>
-            {isActive && <span className="absolute -top-2 w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400"></span>}
+            <span className={`text-[10px] ${isActive ? 'font-bold' : 'font-medium'}`}>{link.label}</span>
+            {isActive && <span className="absolute top-0 w-8 h-1 rounded-b-full bg-blue-600 dark:bg-gold-400 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>}
           </Link>
         );
       })}

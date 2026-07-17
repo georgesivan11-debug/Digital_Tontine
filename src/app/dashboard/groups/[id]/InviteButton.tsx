@@ -2,6 +2,7 @@
 
 import { PlusCircle, CheckCircle } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function InviteButton({ groupId }: { groupId: string }) {
   const [copied, setCopied] = useState(false);
@@ -10,6 +11,7 @@ export default function InviteButton({ groupId }: { groupId: string }) {
     const inviteLink = `${window.location.origin}/invite/${groupId}`;
     navigator.clipboard.writeText(inviteLink);
     setCopied(true);
+    toast.success("Invite link copied to clipboard!");
     setTimeout(() => setCopied(false), 2000);
   };
 

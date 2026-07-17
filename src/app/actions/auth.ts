@@ -5,10 +5,8 @@ import bcrypt from "bcryptjs";
 import { signIn } from "@/lib/auth";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
-import { Resend } from "resend";
+import { sendEmail } from "@/lib/email";
 import { v4 as uuidv4 } from "uuid";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function registerUser(formData: FormData) {
   const name = formData.get("name") as string;
@@ -35,6 +33,7 @@ export async function registerUser(formData: FormData) {
         name,
         email,
         passwordHash,
+        emailVerified: new Date(),
       },
     });
 
@@ -52,29 +51,26 @@ export async function registerUser(formData: FormData) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
     const confirmLink = `${appUrl}/api/verify-email?token=${token}`;
 
-    if (process.env.RESEND_API_KEY) {
-      await resend.emails.send({
-        from: "Digital Tontine <onboarding@resend.dev>",
-        to: email,
-        subject: "Verify your Digital Tontine Account",
-        html: `
-          <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; background-color: #f9fafb; border-radius: 10px;">
-            <h1 style="color: #172554;">Welcome to Digital Tontine! 💰</h1>
-            <p style="color: #4b5563; font-size: 16px;">We're excited to have you on board. Please verify your email address to activate your account and secure your tontine groups.</p>
-            <a href="${confirmLink}" style="display: inline-block; padding: 14px 28px; background-color: #fbbf24; color: #172554; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-              Verify My Account
-            </a>
-            <p style="color: #9ca3af; font-size: 12px; margin-top: 30px;">If you did not request this email, please ignore it.</p>
-          </div>
-        `
-      });
-    }
+    await sendEmail({
+      to: email,
+      subject: "Verify your Digital Tontine Account",
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; background-color: #f9fafb; border-radius: 10px;">
+          <h1 style="color: #172554;">Welcome to Digital Tontine! 💰</h1>
+          <p style="color: #4b5563; font-size: 16px;">We're excited to have you on board. Please verify your email address to activate your account and secure your tontine groups.</p>
+          <a href="${confirmLink}" style="display: inline-block; padding: 14px 28px; background-color: #fbbf24; color: #172554; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+            Verify My Account
+          </a>
+          <p style="color: #9ca3af; font-size: 12px; margin-top: 30px;">If you did not request this email, please ignore it.</p>
+        </div>
+      `
+    });
   } catch (err: any) {
     if (err.message === "NEXT_REDIRECT") {
       throw err;
     }
     console.error("Registration Error:", err);
-    return { error: "A server error occurred. Please make sure DATABASE_URL and RESEND_API_KEY are configured in Vercel." };
+    return { error: "A server error occurred. Please check your connection." };
   }
 
   redirect("/login?registered=true");
@@ -103,4 +99,8 @@ export async function loginUser(formData: FormData) {
     }
     throw error;
   }
+}
+
+export async function loginWithGoogle() {
+  await signIn("google", { redirectTo: "/dashboard" });
 }

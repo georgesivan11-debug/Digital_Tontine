@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createNotification } from "@/app/actions/notifications";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { sendEmail } from "@/lib/email";
 
 export async function GET(request: Request) {
   // Security check: in production, verify an Authorization header matching a CRON_SECRET
@@ -48,8 +46,7 @@ export async function GET(request: Request) {
           );
 
           // Send Email
-          await resend.emails.send({
-            from: 'Digital Tontine <onboarding@resend.dev>',
+          await sendEmail({
             to: membership.user.email,
             subject: `Reminder: Tontine Payment Due in ${daysLeft} day(s)`,
             html: `<p>Hello ${membership.user.name || 'Member'},</p>
@@ -85,8 +82,7 @@ export async function GET(request: Request) {
           );
 
           // Send Email
-          await resend.emails.send({
-            from: 'Digital Tontine <onboarding@resend.dev>',
+          await sendEmail({
             to: membership.user.email,
             subject: `Reminder: Tontine Meeting in ${daysLeft} day(s)`,
             html: `<p>Hello ${membership.user.name || 'Member'},</p>
