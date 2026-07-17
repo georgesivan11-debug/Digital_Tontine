@@ -35,7 +35,6 @@ export async function registerUser(formData: FormData) {
         name,
         email,
         passwordHash,
-        emailVerified: new Date(), // Auto-verify because Resend is in Sandbox mode
       },
     });
 
