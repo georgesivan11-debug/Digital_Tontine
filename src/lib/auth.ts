@@ -36,10 +36,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
-        // Check if email is verified
-        if (!user.emailVerified) {
-          throw new Error("AccessDenied");
-        }
+        // Temporarily disabled for MVP testing due to Resend Sandbox limits
+        // if (!user.emailVerified) {
+        //   throw new Error("AccessDenied");
+        // }
 
         return {
           id: user.id,
